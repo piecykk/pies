@@ -97,7 +97,7 @@ local function createCoin()
 		debounce = true
 		coin:SetAttribute("Collected", true)
 
-		local leaderstats = player:FindFirstChild("leaderstats")
+		local leaderstats = player:WaitForChild("leaderstats", 10)
 		local coinsStat = leaderstats and leaderstats:FindFirstChild("Coins")
 		local awarded = CONFIG.CoinValue * (player:GetAttribute("CoinMultiplier") or 1)
 		if coinsStat then
@@ -112,22 +112,6 @@ local function createCoin()
 	end)
 
 	return coin
-end
-
-local function setupLeaderstats(player)
-	local leaderstats = Instance.new("Folder")
-	leaderstats.Name = "leaderstats"
-	leaderstats.Parent = player
-
-	local coins = Instance.new("IntValue")
-	coins.Name = "Coins"
-	coins.Value = 0
-	coins.Parent = leaderstats
-end
-
-Players.PlayerAdded:Connect(setupLeaderstats)
-for _, player in Players:GetPlayers() do
-	setupLeaderstats(player)
 end
 
 for _ = 1, CONFIG.NumCoins do

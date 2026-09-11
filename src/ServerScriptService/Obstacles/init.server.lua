@@ -41,7 +41,7 @@ local function createSpinBar(position, spinSpeed)
 	pole.Anchored = true
 	pole.CanCollide = false
 	pole.Size = Vector3.new(1, 6, 1)
-	pole.Position = position
+	pole.Position = position + Vector3.new(0, 3, 0)
 	pole.Material = Enum.Material.Metal
 	pole.Color = Color3.fromRGB(80, 80, 80)
 	pole.Parent = obstaclesFolder
@@ -140,7 +140,7 @@ local function createCrusher(position)
 	frame.Anchored = true
 	frame.CanCollide = false
 	frame.Size = Vector3.new(1, 8, 8)
-	frame.Position = position + Vector3.new(0, 3, 0)
+	frame.Position = position + Vector3.new(0, 4, 0)
 	frame.Transparency = 0.5
 	frame.Material = Enum.Material.Metal
 	frame.Color = Color3.fromRGB(60, 60, 60)
@@ -252,7 +252,7 @@ local function createFinishLine(position)
 		end
 		lastFinish[player] = now
 
-		local leaderstats = player:FindFirstChild("leaderstats")
+		local leaderstats = player:WaitForChild("leaderstats", 10)
 		local coinsStat = leaderstats and leaderstats:FindFirstChild("Coins")
 		if coinsStat then
 			coinsStat.Value += CONFIG.FinishBonusCoins * (player:GetAttribute("CoinMultiplier") or 1)

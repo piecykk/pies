@@ -110,7 +110,14 @@ local function createHudIcon(id, icon, keyLabel, color)
 	keyTag.ZIndex = 4
 	keyTag.Parent = frame
 
-	hudIcons[id] = { frame = frame, cooldownOverlay = cooldownOverlay }
+	local tapButton = Instance.new("TextButton")
+	tapButton.BackgroundTransparency = 1
+	tapButton.Text = ""
+	tapButton.Size = UDim2.fromScale(1, 1)
+	tapButton.ZIndex = 5
+	tapButton.Parent = frame
+
+	hudIcons[id] = { frame = frame, cooldownOverlay = cooldownOverlay, tapButton = tapButton }
 end
 
 createHudIcon("Dash", "💨", "Q", Color3.fromRGB(80, 255, 200))
@@ -169,6 +176,9 @@ local function tryRocketJump()
 
 	rootPart.AssemblyLinearVelocity = Vector3.new(rootPart.AssemblyLinearVelocity.X, ROCKET_POWER, rootPart.AssemblyLinearVelocity.Z)
 end
+
+hudIcons.Dash.tapButton.MouseButton1Click:Connect(tryDash)
+hudIcons.RocketJump.tapButton.MouseButton1Click:Connect(tryRocketJump)
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	if gameProcessed then

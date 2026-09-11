@@ -31,7 +31,11 @@ end
 
 Players.PlayerAdded:Connect(function(player)
 	player.CharacterAdded:Connect(function()
-		task.wait(0.1)
+		applyWalkSpeed(player)
+	end)
+	-- PlayerDataService may still be loading saved upgrades when the character spawns, so
+	-- re-apply as soon as the ownership attribute actually lands.
+	player:GetAttributeChangedSignal("OwnsSonicBoots"):Connect(function()
 		applyWalkSpeed(player)
 	end)
 end)
@@ -47,7 +51,7 @@ purchaseItem.OnServerInvoke = function(player, itemId)
 		return { success = false, message = "Already owned" }
 	end
 
-	local leaderstats = player:FindFirstChild("leaderstats")
+	local leaderstats = player:WaitForChild("leaderstats", 10)
 	local coins = leaderstats and leaderstats:FindFirstChild("Coins")
 	if not coins or coins.Value < item.Cost then
 		return { success = false, message = "Not enough coins" }
