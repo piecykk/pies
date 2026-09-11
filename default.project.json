@@ -1,0 +1,9 @@
+{
+  "name": "pies",
+  "tree": {
+    "$className": "DataModel",
+    "ServerScriptService": {
+      "$path": "src/ServerScriptService"
+    }
+  }
+}
