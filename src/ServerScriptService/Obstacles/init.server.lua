@@ -1,7 +1,9 @@
 -- Obstacle course: spinning bars, a lava stretch, and a crusher placed in a line away from the coin field.
 
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
+local Debris = game:GetService("Debris")
 
 local CONFIG = {
 	SpinBarDamage = 10,
@@ -16,6 +18,9 @@ local CONFIG = {
 	CrusherTravelTime = 1.2,
 	CrusherTopY = 6,
 	CrusherBottomY = 1.5,
+
+	FinishBonusCoins = 10,
+	FinishCooldown = 10,
 }
 
 local obstaclesFolder = Instance.new("Folder")
@@ -184,7 +189,85 @@ local function createCrusher(position)
 	end)
 end
 
+local function showFinishEffect(position)
+	local anchor = Instance.new("Part")
+	anchor.Anchored = true
+	anchor.CanCollide = false
+	anchor.Transparency = 1
+	anchor.Size = Vector3.new(1, 1, 1)
+	anchor.Position = position
+	anchor.Parent = workspace
+
+	local billboard = Instance.new("BillboardGui")
+	billboard.Size = UDim2.new(0, 220, 0, 50)
+	billboard.StudsOffset = Vector3.new(0, 2, 0)
+	billboard.AlwaysOnTop = true
+	billboard.Parent = anchor
+
+	local label = Instance.new("TextLabel")
+	label.BackgroundTransparency = 1
+	label.Size = UDim2.new(1, 0, 1, 0)
+	label.Text = "COURSE CLEARED! +" .. CONFIG.FinishBonusCoins
+	label.TextColor3 = Color3.fromRGB(80, 255, 120)
+	label.TextStrokeTransparency = 0.3
+	label.TextScaled = true
+	label.Font = Enum.Font.GothamBold
+	label.Parent = billboard
+
+	local tween = TweenService:Create(
+		anchor,
+		TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+		{ Position = position + Vector3.new(0, 5, 0) }
+	)
+	local fadeTween = TweenService:Create(label, TweenInfo.new(1), { TextTransparency = 1, TextStrokeTransparency = 1 })
+	tween:Play()
+	fadeTween:Play()
+
+	Debris:AddItem(anchor, 1.1)
+end
+
+local function createFinishLine(position)
+	local pad = Instance.new("Part")
+	pad.Name = "FinishLine"
+	pad.Anchored = true
+	pad.CanCollide = true
+	pad.Size = Vector3.new(12, 1, 16)
+	pad.Position = position
+	pad.Material = Enum.Material.Neon
+	pad.Color = Color3.fromRGB(80, 255, 120)
+	pad.Parent = obstaclesFolder
+
+	local lastFinish = {}
+
+	pad.Touched:Connect(function(hit)
+		local character = hit.Parent
+		local player = character and Players:GetPlayerFromCharacter(character)
+		if not player then
+			return
+		end
+
+		local now = os.clock()
+		if lastFinish[player] and now - lastFinish[player] < CONFIG.FinishCooldown then
+			return
+		end
+		lastFinish[player] = now
+
+		local leaderstats = player:FindFirstChild("leaderstats")
+		local coinsStat = leaderstats and leaderstats:FindFirstChild("Coins")
+		if coinsStat then
+			coinsStat.Value += CONFIG.FinishBonusCoins
+		end
+
+		showFinishEffect(pad.Position + Vector3.new(0, 1, 0))
+	end)
+
+	Players.PlayerRemoving:Connect(function(player)
+		lastFinish[player] = nil
+	end)
+end
+
 createSpinBar(Vector3.new(60, 0, 0), 1)
 createSpinBar(Vector3.new(80, 0, 0), -1.4)
 createLavaStretch(Vector3.new(100, 0.5, 0), Vector3.new(10, 1, 16))
 createCrusher(Vector3.new(120, 0, 0))
+createFinishLine(Vector3.new(140, 0.5, 0))
