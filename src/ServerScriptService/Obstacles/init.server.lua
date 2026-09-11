@@ -255,7 +255,7 @@ local function createFinishLine(position)
 		local leaderstats = player:FindFirstChild("leaderstats")
 		local coinsStat = leaderstats and leaderstats:FindFirstChild("Coins")
 		if coinsStat then
-			coinsStat.Value += CONFIG.FinishBonusCoins
+			coinsStat.Value += CONFIG.FinishBonusCoins * (player:GetAttribute("CoinMultiplier") or 1)
 		end
 
 		showFinishEffect(pad.Position + Vector3.new(0, 1, 0))

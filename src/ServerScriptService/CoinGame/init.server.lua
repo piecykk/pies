@@ -23,7 +23,7 @@ local function randomSpawnPosition()
 	return Vector3.new(x, CONFIG.SpawnHeight, z)
 end
 
-local function showPickupEffect(position)
+local function showPickupEffect(position, amount)
 	local billboardAnchor = Instance.new("Part")
 	billboardAnchor.Anchored = true
 	billboardAnchor.CanCollide = false
@@ -41,7 +41,7 @@ local function showPickupEffect(position)
 	local label = Instance.new("TextLabel")
 	label.BackgroundTransparency = 1
 	label.Size = UDim2.new(1, 0, 1, 0)
-	label.Text = "+" .. CONFIG.CoinValue
+	label.Text = "+" .. amount
 	label.TextColor3 = Color3.fromRGB(255, 215, 0)
 	label.TextStrokeTransparency = 0.5
 	label.TextScaled = true
@@ -99,11 +99,12 @@ local function createCoin()
 
 		local leaderstats = player:FindFirstChild("leaderstats")
 		local coinsStat = leaderstats and leaderstats:FindFirstChild("Coins")
+		local awarded = CONFIG.CoinValue * (player:GetAttribute("CoinMultiplier") or 1)
 		if coinsStat then
-			coinsStat.Value += CONFIG.CoinValue
+			coinsStat.Value += awarded
 		end
 
-		showPickupEffect(coin.Position)
+		showPickupEffect(coin.Position, awarded)
 		coin.Parent = nil
 		spinConnection:Disconnect()
 
